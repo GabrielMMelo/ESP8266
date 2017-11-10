@@ -1,0 +1,14 @@
+001177835782 C:\Users\melo\Documents\Ferramentas\LuaLoader\version 0.91\LLbin.lua
+001177835782 C:\Users\melo\Dropbox\Fabio\ESP8266\LuaLoader\version 0.91\LLbin.lua
+001258920106 C:\Users\melo\Dropbox\Fabio\ESP8266\LuaLoader\version 0.91\meu_mqtt\app.lua
+001259232912 C:\Users\melo\Dropbox\Fabio\ESP8266\LuaLoader\version 0.91\meu_mqtt\config.lua
+001258007861 C:\Users\melo\Dropbox\Fabio\ESP8266\LuaLoader\version 0.91\meu_mqtt\init.lua
+001258006547 C:\Users\melo\Dropbox\Fabio\ESP8266\LuaLoader\version 0.91\meu_mqtt\setup.lua
+001259831714 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\app.lua
+001259367363 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\config.lua
+001258007861 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\init.lua
+001259830566 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\LLbin.lua
+001177835782 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\LLbin.lua.lua
+001259830966 C:\Users\melo\Dropbox\Softwares\Arduino\IR\meu_mqtt\setup.lua
+001177837830 C:\Users\Peter\Documents\GitHub\LuaLoader\version 0.90\LLbin.lua
+001180866055 C:\Users\Peter\Documents\GitHub\LuaLoader\version 0.90\xxd.lua
