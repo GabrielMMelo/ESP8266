@@ -2,8 +2,8 @@ const char MAIN_page[] PROGMEM = R"=====(
 <HTML>
  <HEAD>
       <TITLE>MELO's Server</TITLE>
-       <META CHARSET="UTF-8">
-      <STYLE TYPE="text/css">
+       <meta charset="UTF-8">
+      <style type="text/css">
         H1 {
           color: pink;
         }
@@ -26,8 +26,8 @@ const char MAIN_page[] PROGMEM = R"=====(
            font: italic bold 12px/30px Georgia, serif;
         }
 
-      </STYLE>
-      <SCRIPT TYPE = "text/javascript">
+      </style>
+      <script type = "text/javascript">
           function myFunction1(valor) { 
             var texto = "Vai toma nocuuuu! ";
             var aux = "";
@@ -43,7 +43,17 @@ const char MAIN_page[] PROGMEM = R"=====(
             }
              
             else 
-              setInterval(myFunction1, 100, valor+1);          
+              setInterval(myFunction1, 100, valor+1);
+            
+
+            
+
+            
+            //var aux = "";
+            //for (var i = 0; i < texto.length; i++) {
+            //  aux = aux.concat(texto[i]);
+            //  document.getElementById("demo").innerHTML = aux;              
+          //  }
       }
       
           function displayNextImage() {
@@ -98,7 +108,9 @@ const char MAIN_page[] PROGMEM = R"=====(
    <H1 ID="demo" CLASS="branco"> <BIG>Olá-lá, eu sou o ga-gaguinho...</BIG></H1>
   </CENTER>
 
-  </BODY>
+  
+
+</BODY>
 </HTML>
 )=====";
 
