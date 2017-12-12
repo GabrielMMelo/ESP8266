@@ -1,5 +1,18 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
+#include <deprecated.h>
+#include <MFRC522.h>
+#include <MFRC522Debug.h>
+#include <MFRC522Extended.h>
+#include <MFRC522Hack.h>
+#include <require_cpp11.h>
+#include <SPI.h>
+
+#define SS_PIN 4
+#define RST_PIN 5
+MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
+
+String msg = "";
+char st[20];
 
 /*
  WIFI CONFIGURATION
@@ -15,11 +28,11 @@ const String slack_icon_url = "https://pbs.twimg.com/profile_images/1462227900/c
 const String slack_message = "#GoEMakers - mensagem enviada pelo ESP8266 by Arduino Firmware";
 const String slack_username = "esp_milgrau";
 
-void setup()
+void setup() 
 {
-  Serial.begin(115200);
-
-  WiFi.begin(SSID, pwd);
+  Serial.begin(9600); // Inicia a serial
+  Serial.println();
+    WiFi.begin(SSID, pwd);
 
   Serial.print("Connecting");
   while (WiFi.status() != WL_CONNECTED)
@@ -31,8 +44,12 @@ void setup()
 
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
-}
 
+  SPI.begin();    // Inicia  SPI bus
+  mfrc522.PCD_Init(); // Inicia MFRC522
+  Serial.println("Aproxime o seu cartao do leitor...");
+
+}
 
 
 bool mensagemParaSlack(String msg)
@@ -74,9 +91,40 @@ bool mensagemParaSlack(String msg)
   }
 }
 
-void loop(){
-  delay(5000);
-  bool ok = mensagemParaSlack(slack_message);
-  if (ok) Serial.print("Mensagem Enviada com sucesso!");
-  else Serial.print("Mensagem não enviada!");
-}
+
+void loop() 
+{
+  //Procura novos cards
+  if ( ! mfrc522.PICC_IsNewCardPresent()) 
+  {
+    return;
+  }
+  //Seleciona um card
+  if ( ! mfrc522.PICC_ReadCardSerial()) 
+  {
+    return;
+  }
+  //Mostra UID na serial
+  Serial.print("UID da tag :");
+  String conteudo= "";
+  byte letra;
+  for (byte i = 0; i < mfrc522.uid.size; i++) 
+  {
+     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+     Serial.print(mfrc522.uid.uidByte[i], HEX);
+     conteudo.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+     conteudo.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
+  Serial.println();
+  Serial.print("Mensagem : ");
+  conteudo.toUpperCase();
+
+  if (conteudo.substring(1) == "64 96 35 24") //UID 2 - Cartao
+  {
+    msg = "Gabriel Marques de Melo - Chegou na sala!";
+    mensagemParaSlack(msg);
+    Serial.println(msg);
+    Serial.println();
+    delay(2000);
+  }
+} 
