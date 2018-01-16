@@ -1,0 +1,9 @@
+# Executable files
+*.exe
+
+# Spreadsheets
+*.xlsx
+*.xlms
+
+# Text files
+*.txt
