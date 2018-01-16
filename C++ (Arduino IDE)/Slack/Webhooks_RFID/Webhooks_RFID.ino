@@ -1,10 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <deprecated.h>
 #include <MFRC522.h>
-#include <MFRC522Debug.h>
-#include <MFRC522Extended.h>
-#include <MFRC522Hack.h>
-#include <require_cpp11.h>
 #include <SPI.h>
 
 #define SS_PIN 4
@@ -15,24 +10,26 @@ String msg = "";
 char st[20];
 
 /*
- WIFI CONFIGURATION
- */
-char SSID[] = "Dougras";
-char pwd[] = "eusouodougrasvocenaoehodougras";
+CONFIGURACAO WIFI
+*/
+const char *ssid     = "ssid_rede";
+const char *password = "senha_rede";
 
 /*
- SLACK CONFIGURATION
+ CONFIGURACAO SLACK
  */
-const String slack_hook_url = "https://hooks.slack.com/services/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";
+// url do webhooks gerado no slack
+const String slack_hook_url = "https://hooks.slack.com/services/*****/******/******";
+// url do icone usado pelo usuario criado pelo hooks
 const String slack_icon_url = "https://pbs.twimg.com/profile_images/1462227900/cda288d94c3e99d0ccc4e8d1c61d7073_normal.jpg";
 const String slack_message = "#GoEMakers - mensagem enviada pelo ESP8266 by Arduino Firmware";
-const String slack_username = "esp_milgrau";
+const String slack_username = "meu_esp";
 
 void setup() 
 {
   Serial.begin(9600); // Inicia a serial
   Serial.println();
-    WiFi.begin(SSID, pwd);
+    WiFi.begin(ssid, password);
 
   Serial.print("Connecting");
   while (WiFi.status() != WL_CONNECTED)
@@ -52,37 +49,36 @@ void setup()
 }
 
 
-bool mensagemParaSlack(String msg)
-{
+bool mensagemParaSlack(String msg) {
   const char* host = "hooks.slack.com";
-  Serial.print("Connecting to ");
+  Serial.print("Conectando a  ");
   Serial.println(host);
 
-  // Use WiFiClient class to create TCP connections
+  // Criar conexao TCP
   WiFiClientSecure client;
   const int httpsPort = 443;
   if (!client.connect(host, httpsPort)) {
-    Serial.println("Connection failed :-(");
+    Serial.println("Falha na conexao :-(");
     return false;
   }
 
-  // We now create a URI for the request
+  //Criacao da URI para requisicao
 
-  Serial.print("Posting to URL: ");
+  Serial.print("Postando em: ");
   Serial.println(slack_hook_url);
 
   String postData="payload={\"link_names\": 1, \"icon_url\": \"" + slack_icon_url + "\", \"username\": \"" + slack_username + "\", \"text\": \"" + msg + "\"}";
 
-  // This will send the request to the server
+  //Envio da requisicao para o servidor
   client.print(String("POST ") + slack_hook_url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Content-Type: application/x-www-form-urlencoded\r\n" +
                "Connection: close" + "\r\n" +
                "Content-Length:" + postData.length() + "\r\n" +
                "\r\n" + postData);
-  Serial.println("Request sent");
+  Serial.println("Requisicao enviada");
   String line = client.readStringUntil('\n');
-  Serial.printf("Response code was: ");
+  Serial.printf("Resposta: ");
   Serial.println(line);
   if (line.startsWith("HTTP/1.1 200 OK")) {
     return true;
@@ -90,7 +86,6 @@ bool mensagemParaSlack(String msg)
     return false;
   }
 }
-
 
 void loop() 
 {

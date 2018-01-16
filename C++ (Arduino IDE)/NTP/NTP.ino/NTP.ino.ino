@@ -1,5 +1,4 @@
 #include <NTPClient.h>
-// change next line to use with another board/shield
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
@@ -8,7 +7,7 @@ const char *password = "eusouodougrasvocenaoehodougras";
 
 WiFiUDP ntpUDP;
 
-int16_t utc = -3; //UTC -3:00 Brazil
+int16_t utc = -2; //UTC -3:00 Brazil
 uint32_t currentMillis = 0;
 uint32_t previousMillis = 0;
 
@@ -46,8 +45,4 @@ void checkOST(void) {
 void loop() {
   //Chama a verificacao de tempo
   checkOST();
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
-  digitalWrite(LED_BUILTIN,HIGH);
-  delay(500);
 }

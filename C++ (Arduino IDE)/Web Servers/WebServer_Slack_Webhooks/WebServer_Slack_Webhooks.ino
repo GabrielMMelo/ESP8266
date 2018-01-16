@@ -3,8 +3,8 @@
 /*
  WIFI CONFIGURATION
  */
-char SSID[] = "****";
-char pwd[] = "*****";
+char SSID[] = "Dougras";
+char pwd[] = "eusouodougrasvocenaoehodougras";
 WiFiServer server(80);
 
 /*
@@ -30,7 +30,7 @@ void setup()
   }
   Serial.println();
 
-  Serial.println("Connectado!");
+  Serial.println("Conectado!");
   Serial.print("Endereço IP: ");
   Serial.println(WiFi.localIP());
 

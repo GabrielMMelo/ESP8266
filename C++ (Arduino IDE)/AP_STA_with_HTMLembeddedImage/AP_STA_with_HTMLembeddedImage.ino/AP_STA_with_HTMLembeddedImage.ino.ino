@@ -7,8 +7,8 @@
 #include "html.h"
 #define     MAXSC     6           // MAXIMUM NUMBER OF CLIENTS
 /* Set these to your desired credentials. */
-const char *ssid = "Dougras";
-const char *password = "eusouodougrasvocenaoehodougras";
+//const char *ssid = "Dougras";
+//const char *password = "eusouodougrasvocenaoehodougras";
 const char *apSsid = "ESP_MELO";
 const char *apPassword = "semsenha";
 const IPAddress local(11, 11, 11, 11);
@@ -39,8 +39,8 @@ void setup() {
   Serial.println();
   Serial.print("Configuring access point...");
   /* You can remove the password parameter if you want the AP to be open. */
-  //WiFi.mode(WIFI_AP);
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP);
+  //WiFi.mode(WIFI_AP_STA);
   WiFi.softAPConfig(local, dns, netmask);
   WiFi.softAP(apSsid, apPassword);
 

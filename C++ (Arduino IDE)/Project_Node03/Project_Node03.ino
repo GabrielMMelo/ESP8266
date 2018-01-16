@@ -14,8 +14,9 @@ bool system_update_cpu_freq(int);
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+#include <LiquidCrystal_I2C.h>
 #include "Notes.h"
-#include "Lcd.h"
+//#include "Lcd.h"
 #include "Alarm.h"
 #include "DHT.h"
 
@@ -60,9 +61,53 @@ Alarm Alarm;
 
 
 /* ###################################      LCD     ################################### */    
-LiquidCrystal lcd(5, 4, 16, 14, 12, 13); // pinos ESP-12
-LCDBigNumbers lcdNum(&lcd, 0,0); //inclui uma barra no lcd, primeira linha, coluna 1
+//LiquidCrystal lcd(5, 4, 16, 14, 12, 13); // pinos ESP-12
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
+//LCDBigNumbers lcdNum(&lcd, 0,0); //inclui uma barra no lcd, primeira linha, coluna 1
 String message;
+
+void printMove(String message, unsigned short int row, PubSubClient* client) {
+  int sized = message.length();
+  if (sized>16) {
+    int aus = millis();
+    int aus2 = aus;
+    
+    for(int i=0;i<(message.length()-16);i++) {
+      for(int j=0; j <16; j++) {
+        
+        lcd.setCursor(j,row);
+        lcd.print(message[i+j]);
+        if((!i) and (j == 15)) {
+          aus = millis();
+          aus2 = aus;
+          while(aus2-aus <=1500) {
+             client->loop();
+             yield();
+             aus2 = millis();
+          }
+        }
+      }
+      aus = millis();
+      aus2 = aus;
+      while(aus2-aus <=300) {
+        client->loop();
+        yield();
+        aus2 = millis();
+      }
+    }
+    aus = millis();
+    aus2 = aus;
+    while(aus2-aus <=1500) {
+      client->loop();
+      yield();
+      aus2 = millis();
+    }
+  }
+  else{
+        lcd.setCursor(0,row);
+        lcd.print(message);
+  }
+}
 
 /* ###################################      WiFi     ################################### */
 const char *ssid     = "Dougras";
@@ -194,7 +239,9 @@ void checkOST(void) {
     //printf("Time Epoch: %d: ", timeClient.getEpochTime());
     //lcd.setCursor(6, 1);
     String aux = timeClient.getFormattedTime();
-    lcdNum.imprime(aux);
+//    lcdNum.imprime(aux);
+    lcd.setCursor(4,0);
+    lcd.print(aux);
   }
 }
 
@@ -238,15 +285,19 @@ system_update_cpu_freq(160);
   ArduinoOTA.begin();
 
   
-  lcdNum.createChars();
+  //lcdNum.createChars();
   lcd.begin(16, 2);
+  lcd.init();
+  lcd.backlight();
+  lcd.setBacklight(100);
+  lcd.setCursor(0,0);
 
-  pinMode(brightness, OUTPUT);
-  analogWriteRange(10);
-  analogWrite(brightness,8);
+  //pinMode(brightness, OUTPUT);
+  //analogWriteRange(10);
+  //analogWrite(brightness,8);
   
-  pinMode(LED_CASTLE, OUTPUT);
-  digitalWrite(LED_CASTLE, LOW);
+  //pinMode(LED_CASTLE, OUTPUT);
+  //digitalWrite(LED_CASTLE, LOW);
 
   irsend.begin();
   SetWifi("node03", "nodenodenode");
@@ -431,12 +482,26 @@ void callback(char* topic, byte* payload, unsigned int length) {
       Alarm.setAlarmClock(msg);
     
     else if((msg.length() == 1) and (isdigit(msg[0]))){
-      lcdNum.setBrightness(((unsigned short int)msg[0])-48);
+    //  lcdNum.setBrightness(((unsigned short int)msg[0])-48);
     }
       
   }
 }
 
+void greetings(unsigned short int row,String hora) {
+  lcd.clear();
+  lcd.setCursor(0,row);
+  if((hora[0]=='0') and ((hora[1]=='6') or (hora[1]=='7') or (hora[1]=='8') or (hora[1]=='9')))
+      lcd.print("Bom dia :)");
+  else if((hora[0]=='1') and ((hora[1]=='0') or (hora[1] == '1') or (hora[1]=='2')))
+        lcd.print("Bom dia :)");
+  else if(((hora[0] =='1') and ((hora[1]=='8') or (hora[1]=='9'))) or (hora[0] == '0'))
+        lcd.print("Boa noite :)");
+  else if(hora[0]=='1')      
+         lcd.print("Boa tarde :)");
+  else if(hora[0] =='2')
+       lcd.print("Boa noite :)");
+}
 
 
 void loop() {
@@ -448,13 +513,13 @@ void loop() {
   hora = timeClient.getFormattedTime();
   Alarm.checkAlarm(hora,&irsend, &client);
   if(contador-contadorAnt >= 15000) {
-     lcdNum.greetings(0,hora, &lcd);
+     greetings(0,hora);
      stat = WiFi.status();
      if(stat != 3) {            // 3 is WL_CONNECTED
         message = "WiFi NO :/";
         message += " Stat: ";
         message += stat;
-        lcdNum.printMove(message,1,&lcd, &client);
+        printMove(message,1,&client);
         delay(2000);           
         WiFi.disconnect();    
         connectWiFi();
@@ -472,7 +537,7 @@ void loop() {
         else
            message += "OFF ";
         message += tempUmi();
-        lcdNum.printMove(message,1,&lcd, &client);
+        printMove(message,1, &client);
     }
     yield();
     lcd.clear();
