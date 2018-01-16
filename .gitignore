@@ -1,5 +1,6 @@
-# Executable files
+# Binary files
 *.exe
+*.bin
 
 # Spreadsheets
 *.xlsx
@@ -7,3 +8,8 @@
 
 # Text files
 *.txt
+
+# Compacted files
+*.rar
+*.zip
+*.tar.gz
