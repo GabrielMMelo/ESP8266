@@ -1,6 +1,7 @@
 # Binary files
 *.exe
 *.bin
+*.elf
 
 # Spreadsheets
 *.xlsx
