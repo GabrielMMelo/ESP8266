@@ -300,7 +300,7 @@ system_update_cpu_freq(160);
   //digitalWrite(LED_CASTLE, LOW);
 
   irsend.begin();
-  SetWifi("node03", "nodenodenode");
+  //SetWifi("node03", "nodenodenode");
   WiFi.begin(ssid, password);
 
   while ( WiFi.status() != WL_CONNECTED ) {
