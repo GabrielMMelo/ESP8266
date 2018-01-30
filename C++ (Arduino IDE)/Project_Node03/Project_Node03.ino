@@ -20,10 +20,11 @@ bool system_update_cpu_freq(int);
 #include "Alarm.h"
 #include "DHT.h"
 
-//ADC_MODE(ADC_VCC);
+/* ###################################      DEBUG    ################################### */
+#define LED1 15
 
 /* ###################################      DHT11     ################################### */
-#define DHTPIN 1     // what digital pin we're connected to
+#define DHTPIN 12     // what digital pin we're connected to
 #define DHTTYPE DHT11   // DHT 11
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -53,7 +54,7 @@ String tempUmi() {
 #define SamsungDownCh        0xE0E008F7  // Panasonic Down Channel button
 #define SamsungMute        0xE0E0F00F  // Panasonic Mute button
 
-IRsend irsend(3);  // LED no pino 3
+IRsend irsend(14);  // LED no pino 3
 
 
 /* ###################################      Alarm     ################################### */
@@ -115,8 +116,6 @@ const char *password = "eusouodougrasvocenaoehodougras";
 char*       AP_ssid;              // SERVER WIFI NAME
 char*       AP_password;          // SERVER PASSWORD
 WiFiClient espClient;
-WiFiServer  Servidor(9001);      // THE SERVER AND THE PORT NUMBER
-WiFiClient Cliente[6];
 
 void connectWiFi () {
   WiFi.begin(ssid, password);
@@ -127,75 +126,6 @@ void connectWiFi () {
   }
 }
 
-
-void SetWifi(char* Name, char* Password)
-  {
-    // Stop Any Previous WIFI
-    WiFi.disconnect();
-
-    // Setting The Wifi Mode
-    WiFi.mode(WIFI_AP_STA);
-    
-    // Setting The AccessPoint Name & Password
-    AP_ssid      = Name;
-    AP_password  = Password;
-    
-    // Starting The Access Point
-    WiFi.softAP(AP_ssid, AP_password);
-    
-    // Wait For Few Seconds
-    delay(1000);
-    
-    // Getting Server IP
-    IPAddress IP = WiFi.softAPIP();   
-
-    // Starting Server
-    Servidor.begin();
-    Servidor.setNoDelay(true);
-  }
-
-  void AvailableClients()
-  {   
-    if (Servidor.hasClient())
-    {
-      
-      for(uint8_t i = 0; i < 6; i++)
-      {
-        //find free/disconnected spot
-        if (!Cliente[i] || !Cliente[i].connected())
-        {
-          // Checks If Previously The Client Is Taken
-          if(Cliente[i])
-          {
-            Cliente[i].stop();
-          }
-
-          // Checks If Clients Connected To The Server
-          if(Cliente[i] = Servidor.available())
-          {
-            Serial.println("New Client: " + String(i));
-          }
-
-          // Continue Scanning
-          continue;
-        }
-      }
-      
-      //no free/disconnected spot so reject
-      WiFiClient Cliente = Servidor.available();
-      Cliente.stop();
-    }
-  }
-
-
-int sendMessage(String message) { 
-  if((Cliente[0]) or (Cliente[1]) or (Cliente[2]) or (Cliente[3]) or (Cliente[4])) {
-    if(Cliente[0].print(message))
-     return 1;
-    return 0;
-  }
-  return -1;
-}
 
 
 /* ###################################      MQTT     ################################### */
@@ -224,7 +154,7 @@ void connectMQTT(){
 
 /* ###################################      NTP     ################################### */
 WiFiUDP ntpUDP;
-int16_t utc = -3; //UTC -3:00 Brazil
+int16_t utc = -2; //UTC -3:00 Brazil
 uint32_t currentMillis = 0;
 uint32_t previousMillis = 0;
 String hora;
@@ -292,9 +222,9 @@ system_update_cpu_freq(160);
   lcd.setBacklight(100);
   lcd.setCursor(0,0);
 
-  //pinMode(brightness, OUTPUT);
-  //analogWriteRange(10);
-  //analogWrite(brightness,8);
+  pinMode(LED1, OUTPUT);
+  digitalWrite(LED1, LOW);
+  
   
   //pinMode(LED_CASTLE, OUTPUT);
   //digitalWrite(LED_CASTLE, LOW);
@@ -405,7 +335,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       bool aus3 = false;
       while(aus2-aus <=1500) {
         if(!aus3){
-          sendMessage("relay_1_ON");
+        //  sendMessage("relay_1_ON");
           aus3 = true;
         }
         yield();
@@ -420,7 +350,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       bool aus3 = false;
       while(aus2-aus <=1500) {
         if(!aus3){
-          sendMessage("relay_1_OFF");
+       //   sendMessage("relay_1_OFF");
           aus3 = true;
         }
         yield();
@@ -434,7 +364,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       bool aus3 = false;
       while(aus2-aus <=1500) {
         if(!aus3){
-          sendMessage("relay_2_ON");
+      //    sendMessage("relay_2_ON");
           aus3 = true;
         }
         yield();
@@ -448,13 +378,18 @@ void callback(char* topic, byte* payload, unsigned int length) {
       bool aus3 = false;
       while(aus2-aus <=1500) {
         if(!aus3){
-          sendMessage("relay_2_OFF");
+      //    sendMessage("relay_2_OFF");
           aus3 = true;
         }
         yield();
         aus2 = millis();
       }
     }
+
+     else if(msg.equals("LED")){
+      bool stat = digitalRead(LED1);  
+      digitalWrite(LED1, !stat);
+     }
 
     else if(msg.equals("-1")) 
       Alarm.setAlarmOFF();
@@ -508,7 +443,7 @@ void loop() {
   ArduinoOTA.handle();
   contador = millis();
   checkOST();                    //Chama a verificacao de tempo
-  AvailableClients();
+  //AvailableClients();
   client.loop();
   hora = timeClient.getFormattedTime();
   Alarm.checkAlarm(hora,&irsend, &client);

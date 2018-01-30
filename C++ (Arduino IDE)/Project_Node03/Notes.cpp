@@ -1,7 +1,7 @@
 #include "Notes.h"
 #include "Alarm.h"
 #include <Arduino.h>
-#define buzzer 15
+#define buzzer 10
 
 bool milisecond(int tempo, bool flag){
   int anterior = millis();
